@@ -2,11 +2,11 @@
 #'
 #' \code{getPR} downloads all publicly available PR points for a specified country (or countries) and returns this as a dataframe.
 #'
-#' \code{country} and \code{ISO} refer to countries and a lower-level administrative regions such as Mayotte and Grench Guiana.
+#' \code{country} and \code{ISO} refer to countries and a lower-level administrative regions such as Mayotte and French Guiana.
 #'
-#' @param country string containing name of desired country, e.g. \code{ c("Country1", "Country2", ...)} OR \code{ = "ALL"} (use one of \code{country} OR \code{ISO} OR \code{continent}, not combined)
-#' @param ISO string containing ISO3 code for desired country, e.g. \code{c("XXX", "YYY", ...)} OR \code{ = "ALL"} (use one of \code{country} OR \code{ISO} OR \code{continent}, not combined)
-#' @param continent string containing continent for desired data, e.g. \code{c("continent1", "continent2", ...)} (use one of \code{country} OR \code{ISO} OR \code{continent}, not combined)
+#' @param country string containing name of desired country, e.g. \code{ c("Country1", "Country2", ...)} OR \code{ = "ALL"}. (Use one of \code{country} OR \code{ISO} OR \code{continent}, not combined)
+#' @param ISO string containing ISO3 code for desired country, e.g. \code{c("XXX", "YYY", ...)} OR \code{ = "ALL"}. (Use one of \code{country} OR \code{ISO} OR \code{continent}, not combined)
+#' @param continent string containing continent (one of "Africa", "Americas", "Asia", "Oceania") for desired data, e.g. \code{c("continent1", "continent2", ...)}. (Use one of \code{country} OR \code{ISO} OR \code{continent}, not combined)
 #' @param species string specifying the Plasmodium species for which to find PR points, options include: \code{"Pf"} OR \code{"Pv"} OR \code{"BOTH"}
 #' @param extent 2x2 matrix specifying the spatial extent within which PR data is desired, as returned by sp::bbox() - the first column has the minimum, the second the maximum values; rows 1 & 2 represent the x & y dimensions respectively (matrix(c("xmin", "ymin","xmax", "ymax"), nrow = 2, ncol = 2, dimnames = list(c("x", "y"), c("min", "max"))))
 #'
@@ -43,11 +43,11 @@ getPR <- function(country = NULL,
                   continent = NULL,
                   species,
                   extent = NULL) {
-  if (exists('available_countries_stored', envir = .malariaAtlasHidden)) {
-    available_countries <-
-      .malariaAtlasHidden$available_countries_stored
+  if (exists('available_countries_stored_pr', envir = .malariaAtlasHidden)) {
+    available_countries_pr <-
+      .malariaAtlasHidden$available_countries_stored_pr
   } else{
-    available_countries <- listPoints(printed = FALSE)
+    available_countries_pr <- listPoints(printed = FALSE, sourcedata = "pr points")
   }
   
   if (is.null(country) &
@@ -97,8 +97,10 @@ getPR <- function(country = NULL,
         colname <- "continent"
       }
       
-      checked_availability <-
-        isAvailable(
+
+      checked_availability_pr <-
+        isAvailable_pr(
+          sourcedata = "pr points",
           country = country,
           ISO = ISO,
           continent = continent,
@@ -106,14 +108,14 @@ getPR <- function(country = NULL,
         )
       message(paste(
         "Attempting to download PR point data for",
-        paste(available_countries$country[available_countries[, colname] %in% checked_availability$location[checked_availability$is_available ==
+        paste(available_countries_pr$country[available_countries_pr[, colname] %in% checked_availability_pr$location[checked_availability_pr$is_available ==
                                                                                                               1]], collapse = ", "),
         "..."
       ))
       country_URL <-
         paste("%27",
               curl::curl_escape(gsub(
-                "'", "''", checked_availability$location[checked_availability$is_available ==
+                "'", "''", checked_availability_pr$location[checked_availability_pr$is_available ==
                                                            1]
               )),
               "%27",
@@ -172,7 +174,7 @@ getPR <- function(country = NULL,
     if (any(c(!is.null(country),!is.null(ISO),!is.null(continent)))) {
       message(
         "Data downloaded for ",
-        paste(checked_availability$location[checked_availability$is_available ==
+        paste(checked_availability_pr$location[checked_availability_pr$is_available ==
                                               1], collapse = ", "),
         "."
       )
@@ -414,3 +416,56 @@ pr_wide2long <- function(object) {
   
   return(object)
 }
+
+#' Convert data.frames to pr.points objects.
+#' 
+#' Will create empty columns for any missing columns expected in a pr.points data.frame.
+#' This function is particularly useful for use with packages like dplyr that strip 
+#' objects of their classes.
+#' 
+#' @param x A data.frame
+#' 
+#' 
+#' @export
+#' 
+#' @examples
+#' #Download PfPR data for Nigeria and Cameroon and map the locations of these points using autoplot
+#' \donttest{
+#' library(magrittr)
+#' NGA_CMR_PR <- getPR(country = c("Nigeria", "Cameroon"), species = "Pf")
+#' 
+#' # Filter the data frame then readd pr.points class so that autoplot can be used.
+#' NGA_CMR_PR %>% 
+#'   filter(year_start > 2010) %>% 
+#'   as.pr.points %>% 
+#'   autoplot
+#'
+#' }
+
+as.pr.points <- function(x){
+  
+  expected_col_names <- c("dhs_id", "site_id", "site_name", "latitude", "longitude", 
+                          "rural_urban", "country", "country_id", "continent_id", "month_start", 
+                          "year_start", "month_end", "year_end", "lower_age", "upper_age", 
+                          "examined", "positive", "pr", "species", "method", "rdt_type", 
+                          "pcr_type", "malaria_metrics_available", "location_available", 
+                          "permissions_info", "citation1", "citation2", "citation3")
+  
+  missing_columns <- expected_col_names[!(expected_col_names %in% names(x))]
+  
+  stopifnot(inherits(x, 'data.frame'))
+  
+  if(length(missing_columns < 0)){
+    warning('Creating columns of NAs: ', paste0(missing_columns, collapse = ', '))
+    newcols <- data.frame(matrix(NA, ncol = length(missing_columns), nrow = nrow(x)))
+    names(newcols) <- missing_columns
+    x <- cbind(x, newcols)
+  }
+  
+  class(x) <- c('pr.points', class(x))
+  return(x)
+}
+
+
+
+

@@ -3,7 +3,10 @@ knitr::opts_chunk$set(fig.width=12, fig.height=8)
 
 ## ----listd, results = "hide", message = FALSE----------------------------
 library(malariaAtlas)
-listData(datatype = "points")
+listData(datatype = "pr points")
+
+## ----results = "hide", message = FALSE-----------------------------------
+listData(datatype = "vector points")
 
 ## ----results = "hide", message = FALSE-----------------------------------
 listData(datatype = "raster")
@@ -12,10 +15,16 @@ listData(datatype = "raster")
 listData(datatype = "shape")
 
 ## ----highlight = TRUE----------------------------------------------------
-isAvailable(country = "Madagascar")
+isAvailable_pr(country = "Madagascar")
 
 ## ---- error = TRUE, highlight = TRUE-------------------------------------
-isAvailable(ISO = "USA")
+isAvailable_pr(ISO = "USA")
+
+## ----highlight = TRUE----------------------------------------------------
+isAvailable_vec(country = "Myanmar")
+
+## ---- error = TRUE, highlight = TRUE-------------------------------------
+isAvailable_vec(ISO = "BRA")
 
 ## ----message = FALSE-----------------------------------------------------
 MDG_pr_data <- getPR(country = "Madagascar", species = "both")
@@ -23,8 +32,17 @@ MDG_pr_data <- getPR(country = "Madagascar", species = "both")
 ## ----echo = FALSE--------------------------------------------------------
 tibble::glimpse(MDG_pr_data)
 
+## ----message = FALSE-----------------------------------------------------
+MMR_vec_data <- getVecOcc(country = "Myanmar")
+
+## ----echo = FALSE--------------------------------------------------------
+tibble::glimpse(MMR_vec_data)
+
 ## ----message = FALSE, warning = FALSE, results = "hide"------------------
 autoplot(MDG_pr_data)
+
+## ----message = FALSE, warning = FALSE, results = "hide"------------------
+autoplot(MMR_vec_data)
 
 ## ----message = FALSE, warning = FALSE, results = "hide"------------------
 p <- autoplot(MDG_pr_data, printed = FALSE)
@@ -33,7 +51,7 @@ p +
   theme_minimal()
 
 ## ----message = FALSE-----------------------------------------------------
-MDG_shp <- getShp(ISO = "MDG", admin_level = "both")
+MDG_shp <- getShp(ISO = "MDG", admin_level = c("admin1", "admin2"))
 
 ## ----echo = FALSE--------------------------------------------------------
 tibble::glimpse(MDG_shp)
@@ -65,4 +83,18 @@ geom_point(data = pr[pr$year_start==2013,], aes(longitude, latitude, fill = posi
 scale_size_continuous(name = "Survey Size")+
  scale_fill_distiller(name = "PfPR", palette = "RdYlBu")+
  ggtitle("Raw PfPR Survey points\n + Modelled PfPR 2-10 in Madagascar in 2013")
+
+## ----message = FALSE, warning = FALSE------------------------------------
+MMR_shp <- getShp(ISO = "MMR", admin_level = "admin0")
+MMR_shp_df <- as.MAPshp(MMR_shp)
+MMR_an_dirus <- getRaster(surface = "Anopheles dirus species complex", shp = MMR_shp)
+MMR_an_dirus_df <- as.MAPraster(MMR_an_dirus)
+
+p <- autoplot(MMR_an_dirus_df, shp_df = MMR_shp_df, printed = FALSE)
+
+vec <- getVecOcc(country = c("Myanmar"), species = "Anopheles dirus")
+p[[1]] +
+geom_point(data = vec, aes(longitude, latitude), shape = 21,  show.legend = TRUE)+
+  scale_fill_distiller(name = "Predicted distribution of Anopheles dirus species complex", palette = "RdYlBu")+
+  ggtitle("Raw Vector Survey points\n + The predicted distribution of Anohpeles dirus species complex")
 
