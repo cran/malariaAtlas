@@ -1,4 +1,4 @@
-2957b9d311c345c22ccdf160dc209102 *DESCRIPTION
+9d35883ae148726a93c0b922bdae4a68 *DESCRIPTION
 f58a35a1de51c7e7cb0f2de9b79eafc1 *LICENSE
 f7a7f9e907d000682b208d907d230d1b *NAMESPACE
 ab4b6f16004911f04c2fbbb9684cf4d9 *R/as.MAPraster.R
@@ -10,7 +10,7 @@ a9779b9a180b5dd6cdc88334ba65069a *R/autoplot.MAPshp.R
 d1b1409de821999e6072989fea70b84e *R/autoplot_MAPraster.R
 de29362ea5c92d375b6f9cf006607d54 *R/convertPrevalence.R
 0e4319d52849f520ab9302ad49932354 *R/extractRaster.R
-3c38fdc4fc97404c20742754a0a35018 *R/getPR.R
+51bab060fb2164bd78cb9e1c90410ccb *R/getPR.R
 d823d44707e71cf11863d4e0bb002c6b *R/getRaster.R
 271e7822362972f65c32d00b8902dd16 *R/getShp.R
 f66dab92625ffbaa4fedc6482e4e7a1b *R/getVecOcc.R
@@ -24,11 +24,12 @@ e4bad1b88b1ae9d43df8f006849f6cb5 *R/listRaster.R
 f14c734c71b953932c8f7c82f48a993e *R/listSpecies.R
 0d9573c20c7251fff4bf98a5416d7f5e *R/malariaAtlas.R
 45b20a56fa1d6280a4c9ea7782e538f8 *R/zzz.R
-431d4308a67e82956d8b1fc362f66424 *README.md
+7a5d18aae051d24ee007eb4959a06c4f *README.md
 a5755778fa3f5d9a0d40623e9afd1191 *build/vignette.rds
+ea604bae1da6f627228217c610fea208 *inst/CITATION
 c76821fcefb3571f12920dadc0b56c66 *inst/doc/overview.R
 22b56004febcfa17b2160c76cfbb9454 *inst/doc/overview.Rmd
-b641e503292fd4be394561e967b58c45 *inst/doc/overview.html
+c5ba9a92c27f20daa7b92a3eca3c0abd *inst/doc/overview.html
 28f0dd667525d2f764389d34446fb964 *man/as.MAPraster.Rd
 d8f27999097f7f39046de40b06fe9119 *man/as.MAPshp.Rd
 614fb74eb1f925fc217b7416a18b8d4d *man/as.pr.points.Rd
