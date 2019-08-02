@@ -12,3 +12,7 @@ test_that('Extract raster basics works', {
   expect_true(inherits(d, 'data.frame'))
   expect_true(all(d$value < 1 & d$value > 0))
 })
+
+
+
+
