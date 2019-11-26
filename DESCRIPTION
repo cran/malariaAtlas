@@ -1,7 +1,7 @@
 Package: malariaAtlas
 Title: An R Interface to Open-Access Malaria Data, Hosted by the
         'Malaria Atlas Project'
-Version: 0.0.4
+Version: 0.0.5
 Authors@R: c(
     person("Daniel", "Pfeffer", email = "daniel.pfeffer@uqconnect.edu.au", role = c("aut"), comment = c(ORCID = "0000-0002-2204-3488")),
     person("Tim", "Lucas", email =  "timcdlucas@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0003-4694-8107")),
@@ -22,14 +22,14 @@ LazyData: true
 Imports: curl, rgdal, raster, sp, xml2, grid, gridExtra, httr, dplyr,
         stringi, tidyr, methods, stats, utils, rlang
 Depends: ggplot2
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Suggests: testthat, knitr, rmarkdown, palettetown, magrittr, tibble,
         rdhs
 URL: https://github.com/malaria-atlas-project/malariaAtlas
 BugReports: https://github.com/malaria-atlas-project/malariaAtlas/issues
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2019-08-02 13:24:18 UTC; whgu0708
+Packaged: 2019-11-26 14:26:52 UTC; tim
 Author: Daniel Pfeffer [aut] (<https://orcid.org/0000-0002-2204-3488>),
   Tim Lucas [aut, cre] (<https://orcid.org/0000-0003-4694-8107>),
   Daniel May [aut] (<https://orcid.org/0000-0003-0005-2452>),
@@ -41,4 +41,4 @@ Author: Daniel Pfeffer [aut] (<https://orcid.org/0000-0002-2204-3488>),
   David Smith [ctb]
 Maintainer: Tim Lucas <timcdlucas@gmail.com>
 Repository: CRAN
-Date/Publication: 2019-08-02 14:20:02 UTC
+Date/Publication: 2019-11-26 22:30:07 UTC
