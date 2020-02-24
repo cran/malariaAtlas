@@ -13,14 +13,18 @@ output:
 # malariaAtlas 
 ### An R interface to open-access malaria data, hosted by the Malaria Atlas Project. 
 
+
+# The MAP web address has moved. Please update to version 1.0.0 or higher as soon as possible.
+
+
 # Overview 
 
-This package allows you to download parasite rate data (*Plasmodium falciparum* and *P. vivax*), survey occurrence data of the 41 dominant malaria vector species, and modelled raster outputs from the [Malaria Atlas Project](https://map.ox.ac.uk/).
+This package allows you to download parasite rate data (*Plasmodium falciparum* and *P. vivax*), survey occurrence data of the 41 dominant malaria vector species, and modelled raster outputs from the [Malaria Atlas Project](https://malariaatlas.org/).
 
 More details and example analyses can be found in the [published paper)[(https://malariajournal.biomedcentral.com/articles/10.1186/s12936-018-2500-5).
 
 ## Available Data: 
-The data can be explored at [https://map.ox.ac.uk/explorer/#/explorer](https://map.ox.ac.uk/explorer/#/explorer).
+The data can be explored at [https://malariaatlas.org/explorer/#/explorer](https://malariaatlas.org/explorer/#/explorer).
 
 
 
