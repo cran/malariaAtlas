@@ -19,7 +19,7 @@ Check \code{\link{listRaster}} to find titles of available rasters.}
 
 \item{shp}{SpatialPolygon(s) object of a shapefile to use when clipping downloaded rasters. (use either \code{shp} OR \code{extent}; if neither is specified global raster is returned).}
 
-\item{extent}{2x2 matrix specifying the spatial extent within which raster data is desired, as returned by sp::bbox() - the first column has the minimum, the second the maximum values; rows 1 & 2 represent the x & y dimensions respectively (matrix(c("xmin", "ymin","xmax", "ymax"), nrow = 2, ncol = 2, dimnames = list(c("x", "y"), c("min", "max")))) (use either \code{shp} OR \code{extent}; if neither is specified global raster is returned).}
+\item{extent}{2x2 matrix specifying the spatial extent within which raster data is desired, as returned by sf::st_bbox() - the first column has the minimum, the second the maximum values; rows 1 & 2 represent the x & y dimensions respectively (matrix(c("xmin", "ymin","xmax", "ymax"), nrow = 2, ncol = 2, dimnames = list(c("x", "y"), c("min", "max")))) (use either \code{shp} OR \code{extent}; if neither is specified global raster is returned).}
 
 \item{file_path}{string specifying the directory to which working files will be downloaded. Defaults to tempdir().}
 
@@ -28,7 +28,7 @@ Check \code{\link{listRaster}} to find titles of available rasters.}
 \item{vector_year}{default = \code{NULL} for vector occurence rasters, the desired version as prefixed in raster_code returned using available_rasters. By default (\code{NULL}) returns the most recent raster version )}
 }
 \value{
-\code{getRaster} returns a RasterLayer (if only a single raster is queried) or RasterStack (for multiple rasters) for the specified extent.
+\code{getRaster} returns a SpatRaster for the specified extent. Or a SpatRasterCollection if the two rasters are incompatible in terms of projection/extent/resolution
 }
 \description{
 \code{getRaster} downloads publicly available MAP rasters for a specific surface & year, clipped to a provided bounding box or shapefile.
@@ -38,11 +38,11 @@ Check \code{\link{listRaster}} to find titles of available rasters.}
 \donttest{
 MDG_shp <- getShp(ISO = "MDG", admin_level = "admin0")
 MDG_PfPR2_10 <- getRaster(surface = "Plasmodium falciparum PR2-10", shp = MDG_shp, year = 2015)
-autoplot_MAPraster(MDG_PfPR2_10)
+autoplot(MDG_PfPR2_10)
 
 # Download global raster of G6PD deficiency from Howes et al 2012.
 G6PDd_global <- getRaster(surface = "G6PD Deficiency Allele Frequency")
-autoplot_MAPraster(G6PDd_global)
+autoplot(G6PDd_global)
 
 # Download a temporal raster by range
 MDG_PfPR2_10_range <- getRaster(surface = "Plasmodium falciparum PR2-10", 
@@ -53,7 +53,7 @@ MDG_rasters <- getRaster(surface = c("Plasmodium falciparum PR2-10",
                                      'Plasmodium falciparum Incidence', 
                                      'Plasmodium falciparum Support'),
                          shp = MDG_shp, year = list(2009:2012, 2005:2007, NA))
-p <- autoplot_MAPraster(MDG_rasters)
+p <- autoplot(MDG_rasters)
 
 }
 

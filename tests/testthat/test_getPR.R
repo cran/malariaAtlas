@@ -124,4 +124,3 @@ test_that('No location errors properly', {
   )
 
 })
-
