@@ -10,7 +10,7 @@
 #' @param printed Logical vector indicating whether to print maps of supplied rasters.
 #' @param fill_colour_palette String referring to a colorbrewer palette to be used for raster colour scale.
 #' @param fill_scale_transform String givning a transformation for the fill aesthetic.
-#'   See the trans argument in \code{\link{continuous_scale}} for possible values.
+#'   See the trans argument in \code{\link[ggplot2]{continuous_scale}} for possible values.
 #' @param ... Other arguments passed to specific methods
 #'
 #' @return \code{autoplot.SpatRasterCollection} returns a list of plots (gg objects) for each
@@ -30,7 +30,7 @@ autoplot.SpatRasterCollection <- function(
     printed = TRUE
 ) {
   collection_list <- as.list(object)
-  names(collection_list) <- lapply(as.list(object), names)
+  names(collection_list) <- lapply(collection_list, function(o) ifelse(length(o) == 1, names(o), names(o[[1]])))
   
   raster_names <- unique(names(collection_list))
   plot_list <- lapply(X = raster_names, function(name) {
