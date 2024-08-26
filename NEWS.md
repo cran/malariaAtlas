@@ -1,3 +1,13 @@
+# malariaAtlas 1.6.3
+
+* Ensure tests, examples and vignettes run on CRAN fail without error when there is no internet connection
+
+# malariaAtlas 1.6.2
+
+* Support working with masked rasters
+
+* Fix some tests
+
 # malariaAtlas 1.6.0
 
 * Improve handling downloading rasters
