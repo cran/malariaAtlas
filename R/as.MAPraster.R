@@ -17,13 +17,17 @@
 #' # Download PfPR2-10 Raster for Madagascar in 2015 and visualise this on a map.
 #' \dontrun{
 #' MDG_shp <- getShp(ISO = "MDG", admin_level = "admin0")
-#' MDG_PfPR2_10 <- getRaster(surface = "Plasmodium falciparum PR2-10", shp = MDG_shp, year = 2015)
-#' MDG_PfPR2_10 <- as.MAPraster(MDG_PfPR2_10)
+#' MDG_PfPR2_10 <- getRaster(
+#'   dataset_id = "Explorer__2015_Nature_Africa_PR", 
+#'   shp = MDG_shp, year = 2015
+#' )
 #' autoplot(MDG_PfPR2_10)}
 #'
 #' #Download global raster of G6PD deficiency from Howes et al 2012 and visualise this on a map.
 #' \dontrun{
-#' G6PDd_global <- getRaster(surface = "G6PD Deficiency Allele Frequency")
+#' G6PDd_global <- getRaster(
+#'   dataset_id = "Explorer__2012_G6PDd_Allele_Frequency_Global_5k_Decompressed"
+#' )
 #' G6PDd_global <- as.MAPraster(G6PDd_global)
 #' autoplot(G6PDd_global)}
 #'
@@ -38,13 +42,13 @@
 #'
 #' \code{\link{autoplot.MAPraster}}:
 #'
-#' to quickly visualise MAPraster objects created using \code{as.MAPraster}.
+#' to quickly visualise MAPraster objects
 #'
 #'
 #' @export as.MAPraster
 
 as.MAPraster <- function(raster_object){
-  lifecycle::deprecate_warn("1.6.0", "as.MAPraster()", details = "This function has become unnecessary for usage with autoplot. It will be removed in the next version.")
+  lifecycle::deprecate_stop("1.6.0", "as.MAPraster()", details = "This function has become unnecessary for usage with autoplot.")
   return(raster_object)
   
   x <- y <- NULL

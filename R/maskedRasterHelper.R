@@ -4,10 +4,13 @@
 #' @param raster SpatRaster object containing a single layer
 #' 
 isMaskedRaster <- function(raster) {
-  return(terra::nlyr(raster) == 2 && startsWith(names(raster[[2]]), "Mask:"))
+  return(terra::nlyr(raster) > 1 && startsWith(names(raster[[2]]), "Mask:"))
 }
 
+#' Get mask band for masked raster.
+#' 
 #' @param raster SpatRaster object containing a single layer
+#' 
 getMaskBand <- function(raster) {
   if (!isMaskedRaster(raster)) {
     stop("Given raster is not a masked raster.")

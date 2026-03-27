@@ -28,7 +28,11 @@
 #' MDG_shp <- getShp(ISO = "MDG", admin_level = "admin0")
 #'
 #' # Download PfPR2-10 Raster for 2013 & plot this
-#' MDG_PfPR2_10 <- getRaster(surface = "Plasmodium falciparum PR2-10", shp = MDG_shp, year = 2013)
+#' MDG_PfPR2_10 <- getRaster(
+#'   dataset_id = "Malaria__202508_Global_Pf_Parasite_Rate", 
+#'   shp = MDG_shp, 
+#'   year = 2013
+#' )
 #' p <- autoplot(MDG_PfPR2_10)
 #'
 #' # Download raw PfPR survey points & plot these over the top of the raster
@@ -84,7 +88,7 @@ if(is.null(shp_df)){
   
   unique_iso <- unique(object$country_id)
   unique_iso <- unique_iso[unique_iso != '']
-  pr_shp <- getShp(ISO = unique_iso, format = "df", admin_level = admin_level_request)
+  pr_shp <- getShp(ISO = unique_iso, admin_level = admin_level_request)
 
   if(admin_level == "admin0"){
     pr_plot <-  ggplot2::ggplot() +

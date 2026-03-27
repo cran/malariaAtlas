@@ -4,14 +4,13 @@
 #'
 #' @param dataset_id A character string specifying the dataset ID(s) of one or more rasters. These dataset ids can be found in the data.frame returned by listRaster, in the dataset_id column e.g. c('Malaria__202206_Global_Pf_Mortality_Count', 'Malaria__202206_Global_Pf_Parasite_Rate')
 #' @param surface deprecated argument. Please remove it from your code.
-#' @param shp SpatialPolygon(s) object of a shapefile to use when clipping downloaded rasters. (use either \code{shp} OR \code{extent}; if neither is specified global raster is returned).
+#' @param shp SpatialPolygon(s) object of a shapefile to use when clipping downloaded rasters. (use either \code{shp} OR \code{extent}; if neither is specified global raster is returned). Must be in EPSG:4326
 #' @param extent  2x2 matrix specifying the spatial extent within which raster data is desired, as returned by sf::st_bbox() - the first column has the minimum, the second the maximum values; rows 1 & 2 represent the x & y dimensions respectively (matrix(c("xmin", "ymin","xmax", "ymax"), nrow = 2, ncol = 2, dimnames = list(c("x", "y"), c("min", "max")))) (use either \code{shp} OR \code{extent}; if neither is specified global raster is returned).
 #' @param file_path string specifying the directory to which raster files will be downloaded, if you want to download them. If none given, rasters will not be saved to files. 
 #' @param year default = \code{rep(NA, length(dataset_id))} (use \code{NA} for static rasters); for time-varying rasters: if downloading a single surface for one or more years, \code{year} should be a string specifying the desired year(s). if downloading more than one surface, use a list the same length as \code{dataset_id}, providing the desired year-range for each time-varying surface in \code{dataset_id} or \code{NA} for static rasters.
-#' @param vector_year deprecated argument. Please remove it from your code.
-#'
+#' @param vector_year deprecated, use year instead
 
-#' @return \code{getRaster} returns a SpatRaster for the specified extent. Or a SpatRasterCollection if the two rasters are incompatible in terms of projection/extent/resolution
+#' @return getRaster returns a SpatRaster for the specified extent. Or a SpatRasterCollection if the two rasters are incompatible in terms of projection/extent/resolution
 #'
 #' @examples
 #' # Download PfPR2-10 Raster for Madagascar and visualise this immediately.
@@ -22,18 +21,10 @@
 #' }
 #'
 #' @seealso
-#' \code{\link{autoplot_MAPraster}}
+#' \code{\link{autoplot.MAPraster}}:
 #'
-#' to quickly visualise rasters downloded using \code{\link{getRaster}}.
+#' to quickly visualise raster objects
 #'
-#' \code{\link{as.MAPraster}}
-#'
-#' to convert RasterLayer/RasterStack objects into a 'MAPraster' object (data.frame) for
-#'   easy plotting with ggplot.
-#'
-#' \code{\link{autoplot.MAPraster}}
-#'
-#' to quickly visualise MAPraster objects created using \code{as.MAPraster}.
 #'
 #' @export getRaster
 
@@ -50,11 +41,16 @@ getRaster <- function(dataset_id = NULL,
   availableRasters <- suppressMessages(listRaster(printed = FALSE))
   
   if (!is.null(surface)) {
-    lifecycle::deprecate_warn("1.6.0", "getRaster(surface)", details = "The argument 'surface' has been deprecated. It will be removed in the next version. Please use dataset_id to specify the raster instead.")
+    dataset_id_temp = lapply(surface, function(individual_surface){
+      id <- getRasterDatasetIdFromSurface(availableRasters, individual_surface)
+      return(id)
+    })
+    
+    lifecycle::deprecate_stop("1.6.0", "getRaster(surface)", details = paste0("The argument 'surface' has been deprecated. Please use dataset_id to specify the raster instead. In this case use dataset_id: ", dataset_id_temp))
   }
   
   if (!is.null(vector_year)) {
-    lifecycle::deprecate_warn("1.6.0", "getRaster(vector_year)", details = "The argument 'vector_year' has been deprecated. It will be removed in the next version. You can now just use the year parameter instead to specify the years for any type of raster.")
+    lifecycle::deprecate_stop("1.6.0", "getRaster(vector_year)", details = "The argument 'vector_year' has been deprecated. It will be removed in the next version. Use the year parameter instead to specify the years for any type of raster.")
   }
   
   if(is.null(dataset_id)) {
@@ -102,6 +98,10 @@ getRaster <- function(dataset_id = NULL,
   }
   
   if (!is.null(shp)) {
+    if (is.na(sf::st_crs(shp)$epsg) || sf::st_crs(shp)$epsg != 4326) {
+      stop("`shp` must be in EPSG:4326 (WGS84 lon/lat).")
+    }
+    
     shp <- terra::vect(shp)
   }
   
@@ -299,8 +299,25 @@ download_rst <- function(
 
     if (!is.null(time_filter)) {
       workspace <- get_workspace_and_version_from_coverage_id(dataset_id)[[1]]
-      spat_raster <- wcs_client$getCoverage(identifier = dataset_id, bbox = extent, time = time)
       
+      if (startsWith(dataset_id, "Explorer__")) {
+        # monkey patch for old Explorer rasters that don't properly broadcast the time component
+        dataset_coverage <- wcs_client$capabilities$findCoverageSummaryById(dataset_id, exact = TRUE)
+        if (is.null(dataset_coverage$.__enclos_env__$private$dimensions)) { 
+          dims <- dataset_coverage$getDimensions() # cache dims
+          
+          cov <- wcs_client$describeCoverage(dataset_id)
+          years <- seq(from = cov$metadata$TimeDomain$beginPosition$value, to = cov$metadata$TimeDomain$endPosition$value, by = "years")
+          years <- lapply(years, format, format = '%Y-%m-%dT%H:%M:%S')
+          for (i in seq(1, length(dataset_coverage$.__enclos_env__$private$dimensions))) {
+            if (dataset_coverage$.__enclos_env__$private$dimensions[[i]]$type == "temporal") {
+              dataset_coverage$.__enclos_env__$private$dimensions[[i]]$coefficients <- years
+            }
+          }
+        }
+      }
+      
+      spat_raster <- wcs_client$getCoverage(identifier = dataset_id, bbox = extent, time = time)
     } else {
       spat_raster <- wcs_client$getCoverage(identifier = dataset_id, bbox = extent)
     }

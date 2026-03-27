@@ -13,8 +13,12 @@
    africa_all <- getVecOcc(continent = "Africa")
    america_all <- getVecOcc(continent = "Americas")
    
-   available_countries <- paste(listPoints(printed = FALSE, sourcedata = "vector points")$country)
-   ALL <- getVecOcc(country = available_countries)    
+   available_countries <- paste(listVecOccPointCountries(printed = FALSE)$country)
+   
+   ALL <- list()
+   for (chunk in split(available_countries, ceiling(seq_along(available_countries)/20))) {
+     ALL <- c(ALL, getVecOcc(country = chunk))
+   }
    
    #confirm that more than 0 rows are downloaded for brazil
    expect_true(nrow(Brazil_all)>0)

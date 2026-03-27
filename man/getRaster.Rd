@@ -19,7 +19,7 @@ getRaster(
 
 \item{surface}{deprecated argument. Please remove it from your code.}
 
-\item{shp}{SpatialPolygon(s) object of a shapefile to use when clipping downloaded rasters. (use either \code{shp} OR \code{extent}; if neither is specified global raster is returned).}
+\item{shp}{SpatialPolygon(s) object of a shapefile to use when clipping downloaded rasters. (use either \code{shp} OR \code{extent}; if neither is specified global raster is returned). Must be in EPSG:4326}
 
 \item{extent}{2x2 matrix specifying the spatial extent within which raster data is desired, as returned by sf::st_bbox() - the first column has the minimum, the second the maximum values; rows 1 & 2 represent the x & y dimensions respectively (matrix(c("xmin", "ymin","xmax", "ymax"), nrow = 2, ncol = 2, dimnames = list(c("x", "y"), c("min", "max")))) (use either \code{shp} OR \code{extent}; if neither is specified global raster is returned).}
 
@@ -27,10 +27,10 @@ getRaster(
 
 \item{year}{default = \code{rep(NA, length(dataset_id))} (use \code{NA} for static rasters); for time-varying rasters: if downloading a single surface for one or more years, \code{year} should be a string specifying the desired year(s). if downloading more than one surface, use a list the same length as \code{dataset_id}, providing the desired year-range for each time-varying surface in \code{dataset_id} or \code{NA} for static rasters.}
 
-\item{vector_year}{deprecated argument. Please remove it from your code.}
+\item{vector_year}{deprecated, use year instead}
 }
 \value{
-\code{getRaster} returns a SpatRaster for the specified extent. Or a SpatRasterCollection if the two rasters are incompatible in terms of projection/extent/resolution
+getRaster returns a SpatRaster for the specified extent. Or a SpatRasterCollection if the two rasters are incompatible in terms of projection/extent/resolution
 }
 \description{
 \code{getRaster} downloads publicly available MAP rasters for a specific surface & year, clipped to a provided bounding box or shapefile.
@@ -45,16 +45,7 @@ autoplot(MDG_PfPR2_10)
 
 }
 \seealso{
-\code{\link{autoplot_MAPraster}}
+\code{\link{autoplot.MAPraster}}:
 
-to quickly visualise rasters downloded using \code{\link{getRaster}}.
-
-\code{\link{as.MAPraster}}
-
-to convert RasterLayer/RasterStack objects into a 'MAPraster' object (data.frame) for
-  easy plotting with ggplot.
-
-\code{\link{autoplot.MAPraster}}
-
-to quickly visualise MAPraster objects created using \code{as.MAPraster}.
+to quickly visualise raster objects
 }

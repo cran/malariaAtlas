@@ -53,7 +53,12 @@ extractRaster <- function(df,
   availableRasters <- suppressMessages(listRaster(printed = FALSE))
   
   if (!is.null(surface)) {
-    lifecycle::deprecate_warn("1.6.0", "extractRaster(surface)", details = "The argument 'surface' has been deprecated. It will be removed in the next version. Please use dataset_id to specify the raster instead.")
+    dataset_id_temp = lapply(surface, function(individual_surface){
+      id <- getRasterDatasetIdFromSurface(availableRasters, individual_surface)
+      return(id)
+    })
+    
+    lifecycle::deprecate_stop("1.6.0", "extractRaster(surface)", details = paste0("The argument 'surface' has been deprecated. Please use dataset_id to specify the raster instead. In this case use dataset_id: ", dataset_id_temp))
   }
   
   if(is.null(dataset_id)) {
@@ -61,7 +66,7 @@ extractRaster <- function(df,
       dataset_id = future.apply::future_lapply(surface, function(individual_surface){
         id <- getRasterDatasetIdFromSurface(availableRasters, individual_surface)
         return(id)
-      })
+      }, future.seed=NULL)
     } else {
       stop('Please provide a value for dataset_id. Options for this variable can be found by running listRaster() and looking in the dataset_id column.')
     }
@@ -173,12 +178,13 @@ extractRaster <- function(df,
 extractLayerValues <- function(points_to_query,
                                dataset_id,
                                year) {
+  dataset_id <- gsub("__", ":", dataset_id)
   data_json <-
     list(points = points_to_query, layerNames = as.list(dataset_id))
   headers <- c(`Content-Type` = 'application/json')
   res     <-
     httr::POST(
-      url = 'https://data.malariaatlas.org/explorer-api/ExtractLayerValues',
+      url = 'https://data.malariaatlas.org/map-platform-app-backend/api/v1/maps/extract-layer-values',
       httr::add_headers(.headers = headers),
       body = data_json,
       encode = "json"
@@ -194,6 +200,8 @@ extractLayerValues <- function(points_to_query,
     
     layerValues <- subset(layerValues, (year >= min_year) & (year <= max_year))
   }
+  
+  layerValues$layerName <- gsub(":","__", layerValues$layerName)
   
   return(layerValues)
 }

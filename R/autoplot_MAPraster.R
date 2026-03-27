@@ -18,7 +18,11 @@
 #' MDG_shp <- getShp(ISO = "MDG", admin_level = "admin0")
 #'
 #' # Download PfPR2-10 Raster for 2013 & plot this
-#' MDG_PfPR2_10 <- getRaster(surface = "Plasmodium falciparum PR2-10", shp = MDG_shp, year = 2013)
+#' MDG_PfPR2_10 <- getRaster(
+#'   dataset_id = "Malaria__202508_Global_Pf_Parasite_Rate", 
+#'   shp = MDG_shp, 
+#'   year = 2013
+#' )
 #' # p <- autoplot_MAPraster(MDG_PfPR2_10)
 #'
 #' # Download raw PfPR survey points & plot these over the top of the raster
@@ -33,7 +37,9 @@
 #'
 #' # Download global raster of G6PD deficiency (Howes et al 2012) and visualise this on a map.
 #' \dontrun{
-#' G6PDd_global <- getRaster(surface = "G6PD Deficiency Allele Frequency")
+#' G6PDd_global <- getRaster(
+#'   dataset_id = "Explorer__2012_G6PDd_Allele_Frequency_Global_5k_Decompressed"
+#' )
 #' #autoplot_MAPraster(G6PDd_global)
 #' }
 #'
@@ -42,20 +48,16 @@
 #'
 #' to download rasters directly from MAP.
 #'
-#' \code{\link{as.MAPraster}}:
-#'
-#' to convert RasterLayer/RasterStack objects into a 'MAPraster' object (data.frame) for
-#'   easy plotting with ggplot.
 #'
 #' \code{\link{autoplot.MAPraster}}:
 #'
-#' to quickly visualise MAPraster objects created using \code{as.MAPraster}.
+#' to quickly visualise raster objects 
 #'
 #'
 #' @export autoplot_MAPraster
 
 autoplot_MAPraster <- function(object, ...){
-  lifecycle::deprecate_warn("1.6.0", "autoplot_MAPraster()", details = "This function has become unnecessary, just call autoplot directly with the SpatRaster object. It will be removed in the next version.")
+  lifecycle::deprecate_stop("1.6.0", "autoplot_MAPraster()", details = "This function has become unnecessary, just call autoplot directly with the SpatRaster object.")
   plot <- autoplot(object, ...)
   return(invisible(plot))
 }
